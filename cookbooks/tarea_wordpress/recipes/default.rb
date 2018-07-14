@@ -112,9 +112,18 @@ template "/var/www/#{node['main']['wp_domain']}/wp-config.php" do
 end
 
 execute "Comprobar si existe la DB" do
-  command "mysql -u root #{node['main']['database_name']} -e \"SELECT ID FROM #{node['main']['database_name']}.wp_users LIMIT 1;\""
-  ignore_failure true
+  command "mysql -u root #{node['main']['database_name']} -e \"SELECT ID FROM #{node['main']['database_name']}.wp_users LIMIT 1;\" | tee > /tmp/wp_exists"
+  ignore_failure false
 end
+
+template "Copiar la DB de Wordpress" do
+  command ""
+  only_if do
+    # Significa que existen usuarios
+    File.exists?('/tmp/wp_exists') && !File.read('/tmp/wp_exists').empty?
+  end
+end
+
 =begin
 # Backups de la base de datos
 - name: Existe la base de datos?
