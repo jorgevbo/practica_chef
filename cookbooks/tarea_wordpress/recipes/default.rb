@@ -37,15 +37,6 @@ end
 
 # Instalar MySQL
 package 'mysql-server-5.6'
-# package 'python-mysqldb'
-# node.default['main']['mysql_new_root_pass'] = nil
-# Generar contraseña para  root de MySQL
-#execute 'generar contraseña para root' do
-#  command 'openssl rand -hex 7 > /root/mysql_new_root_pass'
-#  creates '/root/.my.cnf'
-#  creates '/root/mysql_new_root_pass'
-#end
-
 
 # Instalar NGINX
 package 'nginx'
