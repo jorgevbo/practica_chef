@@ -132,3 +132,8 @@ execute "Importar la DB Wordpress" do
   end
 end
 
+log 'Mostrar los atributos de la maquina mediante Ohai' do
+  node_ip = node[:network][:interfaces][:eth1][:addresses].detect{ |k, v| v[:family] == 'inet' }.first
+  message """Maquina con #{node['memory']['total']} de memoria y #{node['cpu']['total']} procesador/es.
+          Por favor verificar el acceso a http://#{node_ip}"""
+end
