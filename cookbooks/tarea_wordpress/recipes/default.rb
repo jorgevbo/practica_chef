@@ -109,6 +109,11 @@ end
 
 template "/tmp/wp-database.sql" do
   source 'wordpress/wp-database.sql.erb'
+  variables ({
+    :wp_domain => node['main']['wp_domain'],
+    :initial_post_title => node['main']['initial_post_title'],
+    :initial_post_content => node['main']['initial_post_content']
+  })
   only_if do
     # Solo si no se encuentran usuarios en la DB
     File.exists?('/tmp/wp_exists') && File.read('/tmp/wp_exists').empty?
