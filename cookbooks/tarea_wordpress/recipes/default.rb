@@ -4,7 +4,7 @@
 #
 # Copyright:: 2018, The Authors, All Rights Reserved.
 
-node.default['main']['wp_domain'] = 'book.example.com'
+node.default['main']['wp_domain'] = '192.168.99.10'
 node.default['main']['database_name'] = 'jorgewp'
 node.default['main']['database_user'] = 'jorgewp'
 node.default['main']['database_password'] = 'bananas98765'
