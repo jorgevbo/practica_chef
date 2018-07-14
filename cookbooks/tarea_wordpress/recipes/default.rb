@@ -19,12 +19,6 @@ apt_repository 'ondrej-php' do
   uri 'ppa:ondrej/php'
 end
 
-apt_repository 'mariadb' do
-  uri 'http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.3/ubuntu',
-  components ['mariadb-server']
-end
-
-
 apt_update 'Actualizar cache APT' do
   frequency 86_400
   action :periodic
@@ -42,8 +36,7 @@ package 'apache2' do
 end
 
 # Instalar MySQL
-# package 'mysql-server'
-package 'mariadb-server'
+package 'mysql-server-5.6'
 # package 'python-mysqldb'
 # node.default['main']['mysql_new_root_pass'] = nil
 # Generar contraseña para  root de MySQL
@@ -93,7 +86,8 @@ execute 'Crear base de datos wordpress' do
 end
 
 execute 'Limpiar el usuario de DB para wordpress' do
-  command "mysql -e \"DROP USER IF EXISTS '#{node['main']['database_user']}'@'localhost'\""
+  command "mysql -e \"DROP USER '#{node['main']['database_user']}'@'localhost'\""
+  ignore_failure true
 end
 
 execute 'Crear el usuario de DB para wordpress' do
@@ -117,6 +111,10 @@ template "/var/www/#{node['main']['wp_domain']}/wp-config.php" do
   })
 end
 
+execute "Comprobar si existe la DB" do
+  command "mysql -u root #{node['main']['database_name']} -e \"SELECT ID FROM #{node['main']['database_name']}.wp_users LIMIT 1;\""
+  ignore_failure true
+end
 =begin
 # Backups de la base de datos
 - name: Existe la base de datos?
