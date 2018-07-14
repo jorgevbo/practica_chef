@@ -116,26 +116,19 @@ execute "Comprobar si existe la DB" do
   ignore_failure false
 end
 
-template "Copiar la DB de Wordpress" do
-  command ""
+template "/tmp/wp-database.sql" do
+  source 'wordpress/wp-database.sql.erb'
   only_if do
-    # Significa que existen usuarios
-    File.exists?('/tmp/wp_exists') && !File.read('/tmp/wp_exists').empty?
+    # Solo si no se encuentran usuarios en la DB
+    File.exists?('/tmp/wp_exists') && File.read('/tmp/wp_exists').empty?
   end
 end
 
-=begin
-# Backups de la base de datos
-- name: Existe la base de datos?
-  command: mysql -u root {{database_name}} -e "SELECT ID FROM {{database_name}}.wp_users LIMIT 1;"
-  register: db_exist
-  ignore_errors: true
-  changed_when: false
-- name: Copiar la DB Wordpress
-  template: src=wp-database.sql dest=/tmp/wp-database.sql
-  when: db_exist.rc > 0
-- name: Importar la DB Wordpress
-  mysql_db: target=/tmp/wp-database.sql state=import name={{database_name}}
-  when: db_exist.rc > 0
-=end
+execute "Importar la DB Wordpress" do
+  command "mysql -u root #{node['main']['database_name']} < /tmp/wp-database.sql"
+  only_if do
+    # Solo si no se encuentran usuarios en la DB
+    File.exists?('/tmp/wp_exists') && File.read('/tmp/wp_exists').empty?
+  end
+end
 
